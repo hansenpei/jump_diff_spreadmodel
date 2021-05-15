@@ -41,7 +41,7 @@ class BrownianSimulator:
         if re_normalize and n_paths >= 2:
             gaussians = util.normalize_data(data_matrix=gaussians, act_on='row')
             
-        # 3. Construct the path via Euler advancement.
+        # 3. Construct the paths via Euler advancement.
         for i in range(1, n_points):
             simulated_paths[i,:] = simulated_paths[i-1,:] + r * dt + sigma * gaussians[i-1, :]
             
@@ -65,7 +65,7 @@ class BrownianSimulator:
         if re_normalize and n_paths >= 2:
             gaussians = util.normalize_data(data_matrix=gaussians, act_on='row')
             
-        # 3. Construct the path via Euler advancement.
+        # 3. Construct the paths via Euler advancement.
         for i in range(1, n_points):
             dt = timetable[i] - timetable[i-1]
             simulated_paths[i,:] = simulated_paths[i-1,:] + r * dt + sigma * gaussians[i-1, :]
@@ -107,7 +107,7 @@ class BrownianSimulator:
         # 3. Add back the drift term r*dt, and rescale with sigma.
         exact_advancements = sigma * gaussians + r * dt
         
-        # 4. Construct the path.
+        # 4. Construct the paths exactly.
         for i in range(1, n_points):
             simulated_paths[i, :] = simulated_paths[i-1, :] + exact_advancements[i-1, :]
             
@@ -137,7 +137,7 @@ class BrownianSimulator:
             dt = timetable[i+1] - timetable[i]
             exact_advancements[i,:] = sigma * gaussians[i,:] + r * dt
         
-        # 4. Construct the path.
+        # 4. Construct the paths exactly.
         for i in range(1, n_points):
             simulated_paths[i, :] = simulated_paths[i-1, :] + exact_advancements[i-1, :]
             

@@ -13,7 +13,7 @@ class OUSimulator:
         
         self.seed = seed
         
-    def simulate_discrete_grid(self, r: float = 0, sigma: float = 0.05, dt: float = 1/252,
+    def simulate_discrete_grid(self, theta: float = 0.5, mu: float = 0, sigma: float = 0.05, dt: float = 1/252,
                                n_points: int = 252, n_paths: int = 10, re_normalize: bool = True,
                                init_conditions: np.ndarray = None)-> np.ndarray:
         """
@@ -23,7 +23,8 @@ class OUSimulator:
             dX = theta * (mu - X) * dt + sigma * dW,
         where theta, mu, sigma are constants.
         
-        :param r: (float) Optional. Drift rate. Defaults to 0.
+        :param theta: (float) Optional. Mean-reverting speed. Defaults to 0.5.
+        :param mu: (float) Optional. Mean-reverting level. Defaults to 0.
         :param sigma: (float) Optional. Standard deviation for the Brownian motion. Defalts to 0.05.
         :param dt: (float) Optional. Time advancement step. Defaults to 1/252.
         :param n_points: (int) Optional. Number of steps per simulated path, including the initial condition. Defaults
@@ -42,9 +43,29 @@ class OUSimulator:
         if re_normalize and n_paths >= 2:
             gaussians = util.normalize_data(data_matrix=gaussians, act_on='row')
             
-        # 3. Construct the path via Euler advancement.
+        # 3. Construct the paths via Euler advancement.
         for i in range(1, n_points):
-            simulated_paths[i,:] = simulated_paths[i-1,:] + r * dt + sigma * gaussians[i-1, :]
+            increments = theta * (mu - simulated_paths[i-1,:]) * dt + sigma * gaussians[i-1, :]
+            simulated_paths[i,:] = simulated_paths[i-1,:] + increments
             
         # 4. Output the array.
         return simulated_paths
+    
+#%% Test
+import matplotlib.pyplot as plt
+if __name__ == '__main__':
+    n_paths = 30
+    n_points = 252 * 10
+    theta = 5
+    mu = 0
+    sigma = 0.05
+    
+    ous = OUSimulator()
+    paths_dis = ous.simulate_discrete_grid(theta=theta, mu=mu, sigma=sigma, n_paths=n_paths, n_points=n_points,
+                                           re_normalize = True)
+    
+    plt.figure(dpi=200)
+    for i in range(5):
+        plt.plot(paths_dis[:,i])
+    plt.show()
+    
