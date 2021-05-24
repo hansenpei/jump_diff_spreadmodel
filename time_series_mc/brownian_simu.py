@@ -3,11 +3,11 @@ Simulator class for 1D Brownian motion with drift: dX = r * dt + sigma * dW.
 """
 
 import numpy as np
-from time_series_mc import util
+import util
 
 class BrownianSimulator:
     """
-    Class that simulates brownian based SDEs.
+    Class that simulates the Brownian based SDEs.
     """
     def __init__(self, seed: int = None):
         
