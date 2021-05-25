@@ -29,8 +29,9 @@ class BrownianSimulator:
             to 252.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
 
         # Initialize the timetable. In this case it is a grid.
@@ -60,8 +61,9 @@ class BrownianSimulator:
             to 252.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
         
         # Initialize
@@ -104,8 +106,9 @@ class BrownianSimulator:
             to 252.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
         
         # Initialize the timetable. In this case it is a grid.
@@ -135,8 +138,9 @@ class BrownianSimulator:
             to 252.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
         
         # Initialize

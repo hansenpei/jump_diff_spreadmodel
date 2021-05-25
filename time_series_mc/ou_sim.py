@@ -32,8 +32,9 @@ class OUSimulator:
             to 252.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
         
         # Initialize the timetable. In this case it is a grid.
@@ -63,8 +64,9 @@ class OUSimulator:
         :param sigma: (float) Optional. Standard deviation for the Brownian motion. Defalts to 0.05.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
         
         # Initialize
@@ -89,7 +91,7 @@ class OUSimulator:
         # 4. Output the array.
         return simulated_paths
     
-    def simulate_analytic_grid(self, theta: float = 0.5, mu: float = 0, sigma: float = 0.05, dt: float = 1/252,
+    def simulate_analytical_grid(self, theta: float = 0.5, mu: float = 0, sigma: float = 0.05, dt: float = 1/252,
                                n_points: int = 252, n_paths: int = 10, re_normalize: bool = True,
                                init_condition: float = 0)-> np.ndarray:
         """
@@ -107,22 +109,23 @@ class OUSimulator:
             to 252.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
 
         # Initialize the timetable. In this case it is a grid.
         timetable = np.arange(start=0, stop=dt * n_points, step=dt)
 
         # Simulated paths according to the time table.
-        simulated_paths = self.simulate_analytic_timetable(
+        simulated_paths = self.simulate_analytical_timetable(
             timetable=timetable, theta=theta, mu=mu, sigma=sigma, n_paths=n_paths, re_normalize=re_normalize,
             init_condition=init_condition)
 
         # Output the array.
         return simulated_paths
     
-    def simulate_analytic_timetable(
+    def simulate_analytical_timetable(
             self, timetable: np.ndarray, theta: float = 0.5, mu: float = 0, sigma: float = 0.05, n_paths: int = 10,
             re_normalize: bool = True, init_condition: float = 0)-> np.ndarray:
         """
@@ -140,8 +143,9 @@ class OUSimulator:
         :param sigma: (float) Optional. Standard deviation for the Brownian motion. Defalts to 0.05.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
         
         # Initialize
@@ -195,8 +199,9 @@ class OUSimulator:
             to 252.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
         
         # Initialize the timetable. In this case it is a grid.
@@ -228,8 +233,9 @@ class OUSimulator:
         :param sigma: (float) Optional. Standard deviation for the Brownian motion. Defalts to 0.05.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
         
         # Initialize
@@ -256,7 +262,7 @@ class OUSimulator:
         # 4. Output the array.
         return simulated_paths
     
-    def simulate_analytic_grid_vary_mu(
+    def simulate_analytical_grid_vary_mu(
             self, theta: float = 0.5, mu: Callable[[float], float] = None, sigma: float = 0.05, dt: float = 1/252,
             n_points: int = 252, n_paths: int = 10, re_normalize: bool = True, init_condition: float = 0)-> np.ndarray:
         """
@@ -279,22 +285,23 @@ class OUSimulator:
             to 252.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
 
         # Initialize the timetable. In this case it is a grid.
         timetable = np.arange(start=0, stop=dt * n_points, step=dt)
 
         # Simulated paths according to the time table.
-        simulated_paths = self.simulate_analytic_timetable_vary_mu(
+        simulated_paths = self.simulate_analytical_timetable_vary_mu(
             timetable=timetable, theta=theta, mu=mu, sigma=sigma, n_paths=n_paths, re_normalize=re_normalize,
             init_condition=init_condition)
 
         # Output the array.
         return simulated_paths
     
-    def simulate_analytic_timetable_vary_mu(
+    def simulate_analytical_timetable_vary_mu(
             self, timetable: np.ndarray, theta: float = 0.5, mu: Callable[[float], float] = None, sigma: float = 0.05,
             n_paths: int = 10, re_normalize: bool = True, init_condition: float = 0)-> np.ndarray:
         """
@@ -315,8 +322,9 @@ class OUSimulator:
         :param sigma: (float) Optional. Standard deviation for the Brownian motion. Defalts to 0.05.
         :param n_paths: (float) Optional. Number of paths in the simulation. Needs to be >=2. Defaults to 10.
         :param re_normalize: (bool) Optional. Whether to renormalize the Gaussians sampled at each time advancement.
-            This will only be triggered if n_paths >= 2.
+            This will only be triggered if n_paths >= 2. Defalts to True.
         :param init_condition: (float) Optional. Initial start position for every path. Defaults to 0.
+        :return: (np.ndarray) The simulated paths, dimension is (n_points, n_paths).
         """
         
         # Initialize
@@ -357,19 +365,19 @@ if __name__ == '__main__':
     n_paths = 10
     n_points = 252
     theta = 5
-    mu = lambda t : np.sin(t * 10) / 10
+    mu = lambda t : 0*t #np.sin(t * 10) / 10
     sigma = 0.05
     
     ous = OUSimulator()
     # paths_dis = ous.simulate_discrete_grid(theta=theta, mu=mu, sigma=sigma, n_paths=n_paths, n_points=n_points,
     #                                        re_normalize = True, init_condition=0.2)
-    # paths_aly = ous.simulate_analytic_grid(theta=theta, mu=mu, sigma=sigma, n_paths=n_paths, n_points=n_points,
+    # paths_aly = ous.simulate_analytical_grid(theta=theta, mu=mu, sigma=sigma, n_paths=n_paths, n_points=n_points,
     #                                        re_normalize = True, init_condition=0.2)
     
     # Varying mu(t)
     paths_dis = ous.simulate_discrete_grid_vary_mu(theta=theta, mu=mu, sigma=sigma, n_paths=n_paths, n_points=n_points,
                                            re_normalize = True, init_condition=0)
-    paths_aly = ous.simulate_analytic_grid_vary_mu(theta=theta, mu=mu, sigma=sigma, n_paths=n_paths, n_points=n_points,
+    paths_aly = ous.simulate_analytical_grid_vary_mu(theta=theta, mu=mu, sigma=sigma, n_paths=n_paths, n_points=n_points,
                                            re_normalize = True, init_condition=0)
     
     plt.figure(dpi=200)
