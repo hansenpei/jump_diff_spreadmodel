@@ -15,9 +15,6 @@ class OUJumpSimulator(OUSimulator):
     """
     Class that simulates OU process with jump.
     """
-    def __init__(self, seed: int = None):
-
-        self.seed = seed
 
     def simulate_grid(
             self, theta: float = 0.5, g: Callable[[float], float] = None, sigma: float = 0.05, lambda_j: float = 25,

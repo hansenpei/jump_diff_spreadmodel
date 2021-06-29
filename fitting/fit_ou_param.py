@@ -9,7 +9,16 @@ from typing import Tuple
 
 def fit_lbfgsb(data: np.ndarray, dt: float = 1/98532, **kwargs) -> Tuple[float]:
     """
-    Estimate params of an OU process with mean at 0 using L-BFGS-B.
+    Estimate params of an de-meaned OU process with mean at 0 using L-BFGS-B.
+
+    This is estimating the params by max likelihood. It is relatively slow. Also we assume the OU process is already
+    de-meaned and it has long term average 0.
+
+    :param data: (np.ndarray) The OU process data to be fitted.
+    :param dt: (float) Optional.  Defaults to 1 min:
+        1/98532 = 1/252/391.
+    :param **kwarg: Other kwargs for the scipy.optimize.minimize() method.
+    :return: (Tuple[float]) The fitted theta (mean reverting speed) and sigma (Brownian std).
     """
 
     bnds = ((1e-3, None), (1e-3, None))  # Bounds for theta and sigma.
@@ -19,13 +28,18 @@ def fit_lbfgsb(data: np.ndarray, dt: float = 1/98532, **kwargs) -> Tuple[float]:
     theta = res.x[0]
     sigma = res.x[1]
 
-    return (theta, sigma)
+    return theta, sigma
 
-def _lbfgsb_log_lh_neg(theta_sigma: Tuple[float], data: np.ndarray, dt: float):
+def _lbfgsb_log_lh_neg(theta_sigma: Tuple[float], data: np.ndarray, dt: float) -> float:
     """
     Form the negative log-likelihood function for the L-BFGS-B fitting method.
 
     Assume the OU process has mean 0.
+
+    :param theta_sigma: (Tuple[float]) the theta (mean-reverting speed) and sigma (Brownian std) for the OU process.
+    :param data: (np.ndarray) The OU process data to be fitted.
+    :param dt: (float) The time difference between each data point in the unit of year.
+    :return: (float) The negative of max likelihood for the data.
     """
 
     theta = theta_sigma[0]
@@ -41,7 +55,12 @@ def fit_ar1(data: np.ndarray, dt: float = 1/98532) -> Tuple[float]:
     """
     Estimate params of an OU process from AR(1).
 
-    Assume the OU process has mean 0.
+    Assume the OU process has mean 0. This tends to overestimate but is very quick.
+
+    :param data: (np.ndarray) The OU process data to be fitted.
+    :param dt: (float) Optional.  Defaults to 1 min:
+        1/98532 = 1/252/391.
+    :return: (Tuple[float]) The fitted theta (mean reverting speed) and sigma (Brownian std).
     """
 
     # Create the lag for regression
@@ -53,13 +72,20 @@ def fit_ar1(data: np.ndarray, dt: float = 1/98532) -> Tuple[float]:
     theta = (1 - ols_results.params[1]) / dt  # mean-reverting speed
     sigma = np.sqrt(ols_results.mse_resid / dt)  # std for the Brownian term
 
-    return (theta, sigma)
+    return theta, sigma
 
 def fit_ar1_ml(data: np.ndarray, dt: float = 1/98532) -> Tuple[float]:
     """
-    Estimate params of an OU process from AR(1) but use max-likelihood to find theta.
+    Estimate params of an OU process from AR(1).
 
-    Assume the OU process has mean 0.
+    Assume the OU process has mean 0. This tends to overestimate but is very quick. It is essentially the same as
+    the fit_ar1 method, however theta is estimated by the analytical solution of the maximum likelihood. The result
+    is very simular to the fit_ar1 method in general.
+
+    :param data: (np.ndarray) The OU process data to be fitted.
+    :param dt: (float) Optional.  Defaults to 1 min:
+        1/98532 = 1/252/391.
+    :return: (Tuple[float]) The fitted theta (mean reverting speed) and sigma (Brownian std).
     """
 
     # Create the lag for regression
@@ -71,7 +97,7 @@ def fit_ar1_ml(data: np.ndarray, dt: float = 1/98532) -> Tuple[float]:
     theta = -np.log(ols_results.params[1]) / dt  # mean-reverting speed
     sigma = np.sqrt(ols_results.mse_resid / dt)  # std for the Brownian term
 
-    return (theta, sigma)
+    return theta, sigma
 
 
 #%% Test for LBFGSB

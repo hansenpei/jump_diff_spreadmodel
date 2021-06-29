@@ -23,6 +23,13 @@ class FitParams:
         The jump is modeled as a Poission process and the parameters are estimated accordingly. For the input data,
         only those above or below a given threshold will be considered a jump. The thresholds can be put in absolute
         terms (i.e., prices of stocks) or quantiles.
+
+        :param data: (np.ndarray) The price difference.
+        :param thresholds: (Tuple[float]) The cutoff lower and upper thresholds (in absolute terms, not in quantile).
+            Above the upper threshold or below the lower threshold will be considered a jump.
+        :param dt: (float) Optional. The data frequency given in the overnight_diff. Defaults to 1/252 (Daily).
+        :return: (Tuple[float]) The jump rate, jump mean, and jump standard estimation. Also the subcollection of data
+        that are considered jumps, if 'return_jumps_data' is set True.
         """
 
         if data is None:
@@ -34,8 +41,7 @@ class FitParams:
             upper_threshold = np.quantile(data, thresholds[1])
             thresholds = (lower_threshold, upper_threshold)
 
-        jump_rate, jump_mean, jump_std = fit_jump_param.fit_jump_params(data, thresholds, dt,
-                                                                        return_jumps_data=False)
+        jump_rate, jump_mean, jump_std = fit_jump_param.fit_jump_params(data, thresholds, dt)
         res_dict = {'lambda_j': jump_rate, 'mu_j': jump_mean, 'sigma_j': jump_std}
 
         return res_dict
@@ -103,6 +109,10 @@ class FitParams:
     def _handle_default_inputs(self, data: np.ndarray, mu: float) -> Tuple[np.ndarray, float, np.ndarray]:
         """
         Handle the default inputs of OU-process fitting methods.
+
+        :param data: (np.ndarray) The data we use to fit in 1D array.
+        :param mu: (float) The mean of the OU process.
+        :return: (Tuple[np.ndarray, float, np.ndarray]) Data, mu, and de-meaned data.
         """
 
         if data is None:

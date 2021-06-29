@@ -7,11 +7,28 @@ from typing import Tuple
 
 class StubingerConsistentFilter:
     """
-    Filter jumps that are consistent with the jump-parameter estimation part in [Stubinger (2017)].
+    Filter jumps that are consistent with the jump analysis part in [Stubinger (2017)].
+    This method although is logically consistent, the filtered series does not have good statistical properties.
+    Therefore this filter is depreciated.
     """
 
     def filter(self, prices: np.ndarray, thresholds: Tuple[float], thres_in_quantile: bool = False,
                calculate_on_returns: bool = False) -> np.ndarray:
+        """
+        Filter the prices that is consistent with the jump analysis part.
+
+        Anything outside of a fixed threshold range will be considered a jump, and will be filtered. This method
+        though is logically more consistent, but the filtered result does not have good statistical properties.
+
+        :param prices: (np.ndarray) The price series.
+        :param thresholds: (Tuple[float]) The thresholds in the form of (lower thres, upper thres). It can be in
+            absolute terms or in quantile.
+        :param thres_in_quantile: (bool) Optional. Whether the thresholds input are in terms of quantiles. Defaults to
+            False.
+        :param calculate_on_returns: (bool) Optional. Whether to conduct the filtering based on returns or diff.
+            Defaults to False (i.e., use price differences).
+        :return: (np.ndarray) The jump-adjusted prices.
+        """
 
         # Calculate based on price diffs
         if not calculate_on_returns:
@@ -42,6 +59,18 @@ class StubingerConsistentFilter:
         return filtered_prices
 
     def filter_diffs(self, diffs: np.ndarray, thresholds: Tuple[float], jump_replacement: float = 0) -> np.ndarray:
+        """
+        Filter the differences for jump adjustment.
+
+        We identify returns falling outside of the given thresholds as jumps, and we replace those by the given amount.
+        This method can also handle returns as inputs.
+
+        :param diffs: (np.ndarray) The price differences.
+        :param thresholds: (Tuple[float]) The thresholds in the form of (lower thres, upper thres). It is in absolute
+            terms.
+        :param jump_replacement: (float) Optional. What to replace the jump with. Defaults to 0.
+        :return: (np.ndarray) The jump-adjusted returns.
+        """
 
         filtered_diffs = []
         for diff in diffs:
@@ -59,7 +88,8 @@ class CarteaFigueroaFilter:
     A Mean RevertingJump Diffusion Model with Seasonality.
     """
 
-    def filter(self, prices: np.ndarray, k_std: float, iteration: int, calculate_on_returns: bool = False) -> np.ndarray:
+    def filter(self, prices: np.ndarray, k_std: float, iteration: int,
+               calculate_on_returns: bool = False) -> np.ndarray:
         """
         Filter the jumps from the prices series.
 
@@ -69,6 +99,13 @@ class CarteaFigueroaFilter:
         returns because the prices series may come from a spread where non-positive values can be taken, and using
         returns can yield logically inconsistent results. Only if one is sure that the prices are always positive and
         then can use returns.
+
+        :param prices: (np.ndarray) The prices series.
+        :param k_std: (float) The number of std to be considered a jump.
+        :param iteration: (int) The number of interations we apply for the filtering process.
+        :param calculate_on_returns: (bool) Optional. Whether to conduct the filtering based on returns or diff.
+            Defaults to False (i.e., use price differences).
+        :return: (np.ndarray) The jump-adjusted prices.
         """
 
         # Calculate based on price differences
@@ -94,7 +131,14 @@ class CarteaFigueroaFilter:
         Filter the jumps from the price differences.
 
         Any diff in diffs k_std standard dev away from 0 is considered a jump, and will be filtered. As a result, we
-        will replace the price diff at that spot by 0. We iterate this process at a given number of times.
+        will replace the price diff at that spot by 0. We iterate this process at a given number of times. This
+        function can also handle returns as inputs.
+
+        :param diffs: (np.ndarray) The price differences.
+        :param k_std: (float) The number of std to be considered a jump.
+        :param iteration: (int) The number of interations we apply for the filtering process.
+        :param jump_replacement: (float) Optional. What to replace the jump by. Defaults to 0.
+        :return: (np.ndarray) The filtered price diffs that has no jumps.
         """
 
         for i in range(iteration):
@@ -110,15 +154,21 @@ class CarteaFigueroaFilter:
         Filter the jumps from the price differences.
 
         Any diff in diffs k_std standard dev away from 0 is considered a jump, and will be filtered. As a result, we
-        will replace the price diff at that spot by 0.
+        will replace the price diff at that spot by the given amount.
+
+        :param diffs: (np.ndarray) The price differences.
+        :sigma: (float) The standard deviation.
+        :param k_std: (float) The number of std to be considered a jump.
+        :param jump_replacement: (float) What to replace the jump by.
+        :return: (np.ndarray) The filtered price diffs that has no jumps.
         """
 
-        abs_diffs = abs(diffs)
+        abs_diffs = abs(diffs)  # The absolute values of diffs are compared.
         filtered_diffs = []
         for i, diff in enumerate(diffs):
-            if abs_diffs[i] < sigma * k_std:
+            if abs_diffs[i] < sigma * k_std:  # Below the threshold, not a jump
                 filtered_diffs.append(diff)
-            else:
+            else:  # Above the threshold, considered a jump
                 filtered_diffs.append(jump_replacement)
 
         return np.array(filtered_diffs)
