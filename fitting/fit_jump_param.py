@@ -6,25 +6,21 @@ import numpy as np
 from typing import Tuple
 
 def fit_jump_params(overnight_diff: np.ndarray, thresholds: Tuple[float],
-                    number_of_years: float = None, return_jumps_data: bool = False) -> Tuple[float, np.ndarray]:
+                    dt: float = 1/252, return_jumps_data: bool = False) -> Tuple[float, np.ndarray]:
     """
     Fit the overnight data to find the jump rate, jump mean and std according to a threshold.
 
     Only above or below a given threshold will be considered a jump.
 
-    :param overnight_data: (np.ndarray) The overnight price difference.
+    :param overnight_diff: (np.ndarray) The overnight price difference.
     :param thresholds: (Tuple[float]) The cutoff lower and upper thresholds (in absolute terms, not in quantile). Above
         the upper threshold or below the lower threshold will be considered a jump.
-    :param number_of_years: (float) Optional. The number of years for the data time span. Defaults to the length of
-        overnight_diff / 252.
+    :param dt: (float) Optional. The data frequency given in the overnight_diff. Defaults to 1/252 (Daily).
     :param return_jumps_data: (bool) Optional. Whether we want to return the subcollection of data that is considered
         jumps. Defaults to False.
     :return: (Tuple[float]) The jump rate, jump mean, and jump standard estimation. Also the subcollection of data
         that are considered jumps, if 'return_jumps_data' is set True.
     """
-
-    if number_of_years is None:
-        number_of_years = len(overnight_diff) / 252
 
     lower_threshold = thresholds[0]
     upper_threshold = thresholds[1]
@@ -34,9 +30,9 @@ def fit_jump_params(overnight_diff: np.ndarray, thresholds: Tuple[float],
 
     # Estimate the jump intensity
     abs_subcollection = np.abs(subcollection)
-    jump_rate = len(subcollection) / len(overnight_diff) * number_of_years
-    jump_mean = np.mean(abs_subcollection)
-    jump_std = np.std(abs_subcollection)
+    jump_rate = len(subcollection) / len(overnight_diff) / dt  # rate = num of jumps per year
+    jump_mean = np.mean(subcollection)  # np.mean(abs_subcollection)
+    jump_std = np.std(subcollection)  # np.std(abs_subcollection)
 
     if return_jumps_data:
         return jump_rate, jump_mean, jump_std, subcollection

@@ -15,8 +15,8 @@ class FitParams:
 
         self.data = data
 
-    def fit_jump_param(self, data: np.ndarray = None, thresholds: Tuple[float] = None, thres_in_quantile: bool = False,
-                       number_of_years: float = None) -> Tuple[float]:
+    def fit_jump(self, data: np.ndarray = None, thresholds: Tuple[float] = None, thres_in_quantile: bool = False,
+                 dt: float = 1/252) -> Tuple[float]:
         """
         Fit the jump parameters, get the jump intensity, jump mean, jump std.
 
@@ -34,10 +34,11 @@ class FitParams:
             upper_threshold = np.quantile(data, thresholds[1])
             thresholds = (lower_threshold, upper_threshold)
 
-        jump_rate, jump_mean, jump_std = fit_jump_param.fit_jump_params(data, thresholds, number_of_years,
+        jump_rate, jump_mean, jump_std = fit_jump_param.fit_jump_params(data, thresholds, dt,
                                                                         return_jumps_data=False)
+        res_dict = {'lambda_j': jump_rate, 'mu_j': jump_mean, 'sigma_j': jump_std}
 
-        return jump_rate, jump_mean, jump_std
+        return res_dict
 
 
     def fit_ou_lbfgsb(self, data: np.ndarray = None, mu: float = None, dt: float = 1/98532, **kwargs) -> dict:
@@ -67,7 +68,8 @@ class FitParams:
 
         return res_dict
 
-    def fit_ou_ar1(self, data: np.ndarray = None, mu: float = None, dt: float = 1/98532) -> dict:
+    def fit_ou_ar1(self, data: np.ndarray = None, mu: float = None, dt: float = 1/98532,
+                   ml_adjustment: bool = True) -> dict:
         """
         Fit the OU-process by using the AR1 process.
 
@@ -79,15 +81,19 @@ class FitParams:
         :param mu: (float) Optional. The mean of the OU process. Defaults to the data average.
         :param dt: (float) Optional. The time difference between each data point in the unit of year. Defaults to
             1/98532 = 1/252/391, which is 1 min.
-        :param **kwargs: Optional. Additional keyword arguments for the L-BFGS-B method from scipy.optimize.minimize.
+        :param ml_adjustment: (bool) Optional. Whether to adjust the paramter computation to the max likelihood
+            estimation. The difference is minor in most cases. Defaults to True.
         :return: (dict) The fitted result stored in a dictionary.
         """
 
         # Handle default values
         data, mu, data_demean = self._handle_default_inputs(data, mu)
 
-        # Conduct the fitting process using L-BFGS-B
-        params = fit_ou_param.fit_ar1(data=data_demean, dt=dt)
+        # Conduct the fitting process using the AR(1) model
+        if ml_adjustment:
+            params = fit_ou_param.fit_ar1_ml(data=data_demean, dt=dt)
+        else:
+            params = fit_ou_param.fit_ar1(data=data_demean, dt=dt)
         # Put the result in a dictionary: mu is the long term mean of the OU process, theta is the mean-reverting
         # speed, sigma is the std of the Brownian part.
         res_dict = {'mu': mu, 'theta': params[0], 'sigma': params[1]}
